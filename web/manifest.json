@@ -1,0 +1,23 @@
+{
+    "name": "glaksoalcovid",
+    "short_name": "glaksoalcovid",
+    "start_url": ".",
+    "display": "minimal-ui",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Una app para ayudar a crear un grafo de los contactos que tuvieron las personas infectadas con covid para asi actuar de manera rapida",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
