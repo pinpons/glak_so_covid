@@ -203,4 +203,5 @@ void navigateToOtherPageNotBackUser(BuildContext context, Widget toPage) {
 }
 
 String bytesImageToBase64(Uint8List bytes) => base64.encode(bytes);
-Uint8List base64ImageToBytes(String base64string) => base64.decode(base64string);
+Uint8List base64ImageToBytes(String base64string) =>
+    base64.decode(base64string);

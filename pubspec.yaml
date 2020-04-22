@@ -29,6 +29,7 @@ dependencies:
   image_picker:
   progress_dialog:
   device_info:
+  uuid: 2.0.4
 
 
   # The following adds the Cupertino Icons font to your application.

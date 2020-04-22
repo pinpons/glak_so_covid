@@ -10,9 +10,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class StorageProvider {
+  static bool dev = false;
   static Database _database;
   int userNewIndentificador = 7;
-  static int version = 1;
+  static int version = 2;
   static StorageProvider instance = new StorageProvider._();
 
   factory StorageProvider() => instance;
@@ -26,6 +27,7 @@ class StorageProvider {
   }
 
   Future<Database> get _open async {
+    debugPrint("ACTION: Abriendo la base de datos .:.:·:");
     Directory appRootPath = await getApplicationDocumentsDirectory();
     final String pathDb = join(appRootPath.path, 'veniio.db');
 
@@ -39,22 +41,23 @@ class StorageProvider {
       await db.execute(
           'CREATE TABLE estadisticas(count_persons INTEGER,date_work TEXT)');
       await db.execute(
-          '''CREATE TABLE metainfo(id INTEGER PRIMARY KEY AUTOINCREMENT,group_heroe_name TEXT,ubicacion_name TEXT,
-        x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
+          '''CREATE TABLE metainfo(id INTEGER PRIMARY KEY ,group_heroe_name TEXT,ubicacion_name TEXT,
+x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
       await db.execute(
-          '''CREATE TABLE persons(id INTEGER PRIMARY KEY AUTOINCREMENT,foto_uno TEXT,foto_dos TEXT,extra TEXT,
+          '''CREATE TABLE persons(id TEXT ,foto_uno TEXT,foto_dos TEXT,extra TEXT,
         id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     });
   }
+  // # Model hero
+  // ```sql 
   // CREATE TABLE heroe(id_meta INTEGER DEFAULT $userNewIndentificador ,name TEXT,uuid_movil TEXT,
   // verificado integer DEFAULT 0,password TEXT,get_passwd integer DEFAULT 0,
   // foto TEXT,group_name TEXT,new INTEGER DEFAULT 1)
+  // ```
 
   // if return false is a new user devide, but create user
-  //FIXME: quita el false de resr y mira lo extraño que ocurre, le hice un pequeño arreglo
-  //por que ya no habia tiempo : https://github.com/pinpons/glak_so_covid/labels/bug
   Future<bool> get isNewUser async {
-    debugPrint("@@@@@@@@@@ON DATABASE@@@@@@@@@@@@@@@@@@@");
+    debugPrint("isNewUser() -> call");
     Database db = await database;
     List<Map<String, dynamic>> res =
         await db.query("heroe", where: "id_meta = ?", columns: [
@@ -69,19 +72,18 @@ class StorageProvider {
     ], whereArgs: [
       userNewIndentificador
     ]);
-    debugPrint("$res");
+    debugPrint("Resultados: $res");
     if (res.isEmpty) {
       Map infoDevice = await simpleMovilInfo;
-      debugPrint("@@@@@@@@@@@@@@@@@@@@@@@@@IF IFIFF@@@@@@@@@@@@@@@@@@@@@");
+      debugPrint("Es nuevo usuario");
       await db.insert("heroe", {
         "id_meta": userNewIndentificador,
         "uuid_movil": infoDevice["id"],
         "new": 0
       });
-      debugPrint("@@@@returnfalse@@@@@@@");
       return false;
     }
-    debugPrint("@@@@@@@@@@@@@@@@@@@@@@@@@ELSE@@@@@@@@@@@@@@@@@@@@@");
+    debugPrint("No es nuevo usuario");
     AppBloc appBloc = new AppBloc();
     appBloc.hero = new HeroModel(name: res[0]["name"]);
     appBloc.hero.getPasswd = int2bool(res[0]["get_passwd"]);
@@ -106,8 +108,30 @@ class StorageProvider {
       status = StatusRegisterHero.renderWork;
     }
     appBloc.voyArenderizar = status;
-/*end render Work or Render Form*/ debugPrint("@@@@@@@RETRUN TRU@@@@@@");
+    /*end render Work or Render Form*/
     return true;
+  }
+
+  /// # insert images in table persons
+  Future<int> insertgpersons(Map<String,String> data) async {
+    int res = 0;
+    Database db = await database;
+    try {
+      int a = await db.insert("persons", data);
+      
+    } catch (e) {
+      print("ERROR INSERT : $e");
+    }
+
+    return res;
+
+  }
+
+  /// # list persons save
+  // TODO: completame
+  Future<List<Map<String,dynamic>>> getPersonas() async {
+    Database db = await database;
+    return await db.rawQuery("SELECT id FROM persons");
   }
 
   Future<Map<String, String>> get simpleMovilInfo async {
