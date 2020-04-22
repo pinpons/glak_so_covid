@@ -117,9 +117,14 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
     int res = 0;
     Database db = await database;
     try {
-      int a = await db.insert("persons", data);
-      
+      await db.insert("persons", data);
+      // estadisticas(count_persons INTEGER,date_work TEXT)
+      await db.insert("estadisticas", <String,dynamic>{"count_persons": 0,"date_work": getDate()});
     } catch (e) {
+      // DATE:some@ERROR:meta_description:error_message;
+      await db.insert("estadisticas", <String,dynamic>{"count_persons": 1,
+      "date_work": "DATE:${getDate()}@ERROR:error al insertar pesona:$e"
+      });
       print("ERROR INSERT : $e");
     }
 

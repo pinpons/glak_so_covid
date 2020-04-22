@@ -108,14 +108,19 @@ class TakePhotos extends StatelessWidget {
                 // FIXME: :)?
                 // por favor quitame la preocupacion
                 Uuid uuid = new Uuid();
-                var data = <String,String>{
+                //var data = <String,String>{
+                //    "id": uuid.v4(),
+                //    "foto_uno": bytesImageToBase64(blocw.image1),
+                //    "foto_dos": bytesImageToBase64(blocw.image2),
+                //    "on_time": DateTime.now().toString()
+                //  };
+                await instance.insertgpersons(
+                  <String,String>{
                     "id": uuid.v4(),
                     "foto_uno": bytesImageToBase64(blocw.image1),
                     "foto_dos": bytesImageToBase64(blocw.image2),
                     "on_time": DateTime.now().toString()
-                  };
-                await instance.insertgpersons(
-                  data
+                  }
                 );
                 blocw.dispose();
                 await pr.hide();
