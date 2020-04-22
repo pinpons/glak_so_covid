@@ -80,7 +80,7 @@ class TakePhotos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Column(children: [
-      _showGroupName(),
+      //_showGroupName(),
       new Expanded(child: streamImages()),
       // FIXME:decomenta y ocurre el error
       sendButton(),
@@ -92,7 +92,7 @@ class TakePhotos extends StatelessWidget {
       stream: blocw._streamsg.stream,
       builder: (BuildContext ctx, AsyncSnapshot snapshot) {
         if(snapshot.hasData) {
-          if(blocw.img1 != 0 && blocw.img2 != 0) {
+          if(blocw.img1 == 1 && blocw.img2 == 1) {
             //TODO:añdir funcionalidad
             return createButton((){
 
@@ -122,12 +122,20 @@ class TakePhotos extends StatelessWidget {
           return ListView.builder(
               itemCount: blocw.listrender.length,
               itemBuilder: (ctx, i) => blocw.listrender[i]);
-        } else if (blocw.listrender != null) {
+        } else if(snapshot.data == renderworkstatus.addsecondimage){
+          return ListView.builder(
+              itemCount: blocw.listrender.length,
+              itemBuilder: (ctx, i) => blocw.listrender[i]);
+          }else if (blocw.listrender != null) {
           return ListView.builder(
               itemCount: blocw.listrender.length,
               itemBuilder: (ctx, i) => blocw.listrender[i]);
         }
-        return Text("Necesito una imagen frontal y trasera del carnet");
+        //FIXME:no aparece el mensage
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0.0, 180.0, 0.0, 0.0),
+          child: Text("Necesito una imagen frontal y trasera del carnet"),
+        );
       },
     );
   }
@@ -139,6 +147,16 @@ class TakePhotos extends StatelessWidget {
         try {
           //blocw.listrender.add(new Text("etwrtlwemflñwem  elñwfwef"));
           var img = await ImagePicker.pickImage(source: ImageSource.camera);
+          
+        debugPrint("00000000000000000000000000000");  
+        print("img1 = ${blocw.img1} img2 = ${blocw.img2}");
+        print(blocw.img1 == 0 && blocw.img2 == 0);
+        print(blocw.img1 == 1 && blocw.img2 == 0 || blocw.img2 == 1);
+          // logic
+        if(blocw.img1 == 0 && blocw.img2 == 0 ){
+          blocw.image1 = img;
+          blocw.img1 = 1;
+          debugPrint("1111111111111111111111111111111111111");
           blocw.listrender.add(FutureBuilder(
             builder: (ctx, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
@@ -149,10 +167,36 @@ class TakePhotos extends StatelessWidget {
             },
             future: img.readAsBytes(),
           ));
+        blocw._streamsg.sink.add(renderworkstatus.addfirstimage);
+        }else if(blocw.img1 == 1 && blocw.img2 == 0 || blocw.img2 == 1){
+          blocw.image2 = img;
+          blocw.img2 = 1;
+          debugPrint("2222222222222222222222222222222222222");
+           blocw.listrender.insert(1,FutureBuilder(
+             builder: (ctx, AsyncSnapshot snapshot) {
+               if (snapshot.hasData) {
+                 return new Center(child: Image.memory(snapshot.data));
+               } else {
+                 return new Center(child: new CircularProgressIndicator());
+               }
+             },
+             future: img.readAsBytes(),
+           ));
+          //blocw.listrender[1] = FutureBuilder(
+          //  builder: (ctx, AsyncSnapshot snapshot) {
+          //    if (snapshot.hasData) {
+          //      return new Center(child: Image.memory(snapshot.data));
+          //    } else {
+          //      return new Center(child: new CircularProgressIndicator());
+          //    }
+          //  },
+          //  future: img.readAsBytes(),
+          //);
+        blocw._streamsg.sink.add(renderworkstatus.addsecondimage);
+        }
         } catch (e) {
           debugPrint("&&&&&&&&&&&&&&&&&& $e");
         }
-        blocw._streamsg.sink.add(renderworkstatus.addfirstimage);
       },
     );
   }
@@ -201,7 +245,7 @@ class TakePhotos extends StatelessWidget {
 
 class WorkBloc {
   StreamController<renderworkstatus> _streamsg = StreamController<renderworkstatus>.broadcast();
-  int img1, img2 = 0;
+  int img1 = 0; int img2 = 0;
   List<Widget> listrender = new List<Widget>();
   File image1;
   File image2;
