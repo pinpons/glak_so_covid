@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:glaksoalcovid/components/App.dart';
 import 'package:image_picker/image_picker.dart';
@@ -80,9 +81,9 @@ class TakePhotos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Column(children: [
+      // TODO: agregar shared preferences,por que es muy molesto todos esos mensages
       //_showGroupName(),
       new Expanded(child: streamImages()),
-      // FIXME:decomenta y ocurre el error
       sendButton(),
       button()
     ]);
@@ -131,7 +132,7 @@ class TakePhotos extends StatelessWidget {
               itemCount: blocw.listrender.length,
               itemBuilder: (ctx, i) => blocw.listrender[i]);
         }
-        //FIXME:no aparece el mensage
+        // FIXME:no aparece el mensage
         return Padding(
           padding: const EdgeInsets.fromLTRB(0.0, 180.0, 0.0, 0.0),
           child: Text("Necesito una imagen frontal y trasera del carnet"),
@@ -154,12 +155,13 @@ class TakePhotos extends StatelessWidget {
         print(blocw.img1 == 1 && blocw.img2 == 0 || blocw.img2 == 1);
           // logic
         if(blocw.img1 == 0 && blocw.img2 == 0 ){
-          blocw.image1 = img;
+          
           blocw.img1 = 1;
           debugPrint("1111111111111111111111111111111111111");
           blocw.listrender.add(FutureBuilder(
             builder: (ctx, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
+                blocw.image1 = snapshot.data;
                 return new Center(child: Image.memory(snapshot.data));
               } else {
                 return new Center(child: new CircularProgressIndicator());
@@ -169,12 +171,12 @@ class TakePhotos extends StatelessWidget {
           ));
         blocw._streamsg.sink.add(renderworkstatus.addfirstimage);
         }else if(blocw.img1 == 1 && blocw.img2 == 0 || blocw.img2 == 1){
-          blocw.image2 = img;
           blocw.img2 = 1;
           debugPrint("2222222222222222222222222222222222222");
            blocw.listrender.insert(1,FutureBuilder(
              builder: (ctx, AsyncSnapshot snapshot) {
                if (snapshot.hasData) {
+                 blocw.image2 = snapshot.data;
                  return new Center(child: Image.memory(snapshot.data));
                } else {
                  return new Center(child: new CircularProgressIndicator());
@@ -195,7 +197,7 @@ class TakePhotos extends StatelessWidget {
         blocw._streamsg.sink.add(renderworkstatus.addsecondimage);
         }
         } catch (e) {
-          debugPrint("&&&&&&&&&&&&&&&&&& $e");
+          debugPrint("Error al añadir los widget con las imagenes $e");
         }
       },
     );
@@ -247,8 +249,8 @@ class WorkBloc {
   StreamController<renderworkstatus> _streamsg = StreamController<renderworkstatus>.broadcast();
   int img1 = 0; int img2 = 0;
   List<Widget> listrender = new List<Widget>();
-  File image1;
-  File image2;
+  Uint8List image1;
+  Uint8List image2;
   WorkBloc get _createmsg {
     _streamsg = new StreamController<renderworkstatus>.broadcast();
     return this;
