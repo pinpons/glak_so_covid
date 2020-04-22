@@ -103,7 +103,7 @@ class TakePhotos extends StatelessWidget {
     // TODO: implement build
     return new Column(
       children: [
-      //_showGroupName(),
+      _showGroupName(),
       new Expanded(child:streamImages()),
       button()
       ]
@@ -128,9 +128,22 @@ class TakePhotos extends StatelessWidget {
     return FloatingActionButton(
 
       child: Icon(Icons.add_a_photo),
-      onPressed: (){
+      onPressed: () async {
         try {
-        blocw.listrender.add(new Text("etwrtlwemflñwem  elñwfwef"));
+        //blocw.listrender.add(new Text("etwrtlwemflñwem  elñwfwef"));
+        var img = await ImagePicker.pickImage(source: ImageSource.camera);
+        blocw.listrender.add(
+          FutureBuilder(
+            builder: (ctx,AsyncSnapshot snapshot){
+              if (snapshot.hasData) {
+                return new Center(child:Image.memory(snapshot.data));
+              } else {
+                return new Center(child: new CircularProgressIndicator());
+              }
+            },
+            future: img.readAsBytes(), 
+          )
+        );
           
         } catch (e) {
           debugPrint("&&&&&&&&&&&&&&&&&& $e");
