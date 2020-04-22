@@ -149,6 +149,7 @@ class CheckPage extends StatelessWidget {
       },
     );
   }
+
   //TODO: añadir un mensajito de ok passwd
   Widget _crearBoton(FormBloc bloc) {
     return StreamBuilder(
@@ -169,12 +170,12 @@ class CheckPage extends StatelessWidget {
                     bloc
                       ..nameClose
                       ..passwordClose;
-                   //  Navigator.pushReplacementNamed(context, "/works");
-                   Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => WorkPageTabs()),
-        (Route<dynamic> route) => false,
-        );
+                    //  Navigator.pushReplacementNamed(context, "/works");
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => WorkPageTabs()),
+                      (Route<dynamic> route) => false,
+                    );
                   }
                 : null);
       },

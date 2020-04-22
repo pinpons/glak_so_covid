@@ -195,8 +195,8 @@ bool int2bool(int number) => !(((number < 0) ? number * -1 : number) < 1);
 int bool2int(bool value) => value ? 1 : 0;
 void navigateToOtherPageNotBackUser(BuildContext context, Widget toPage) {
   Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => toPage),
-        (Route<dynamic> route) => false,
-        );
+    context,
+    MaterialPageRoute(builder: (context) => toPage),
+    (Route<dynamic> route) => false,
+  );
 }

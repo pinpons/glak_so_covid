@@ -232,10 +232,10 @@ class FormPage extends StatelessWidget {
               whereArgs: [StorageProvider().userNewIndentificador]);
           //Navigator.pushReplacementNamed(context, "/works");
           Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => WorkPageTabs()),
-        (Route<dynamic> route) => false,
-        );
+            context,
+            MaterialPageRoute(builder: (context) => WorkPageTabs()),
+            (Route<dynamic> route) => false,
+          );
           return 0;
         });
       });
