@@ -162,4 +162,13 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
 
     return {"name": deviceName, "version": deviceVersion, "id": identifier};
   }
+  
+  Future<int> getSum() async {
+    Database db = await database;
+    // estadisticas(count_persons INTEGER,date_work TEXT)
+    String date = getDate();
+    String sql = "SELECT count(count_persons) as res FROM estadisticas where count_persons = 0 and date_work = \'$date\'";
+    var res = await db.rawQuery(sql);
+    return res[0]['res'];
+  }
 }

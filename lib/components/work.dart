@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:glaksoalcovid/components/App.dart';
+import 'package:glaksoalcovid/components/src/estadisticas.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:uuid/uuid.dart';
@@ -34,7 +35,7 @@ class WorkPage extends State<WorkPageTabs> {
     pages = [
       Text("translate"),
       TakePhotos(keyScaffold: _keyScaffold),
-      Text("statics")
+      Estadisticas()
     ];
   }
 
