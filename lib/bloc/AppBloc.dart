@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+import 'dart:io';
 import 'package:glaksoalcovid/components/App.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -223,6 +223,20 @@ String getDate() {
   mes = hoy.month;
   ano = hoy.year;
   return "$dia/$mes/$ano";
-  
-  
+}
+
+Future<int> get isConnected async {
+int returns;
+try {
+  List<InternetAddress> result = await InternetAddress.lookup('google.com');
+  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+    returns = 1;
+  }
+} on SocketException catch (_) {
+  returns = 0;
+} on Exception catch(_) {
+  returns = -1;
+}
+return returns;
+
 }
