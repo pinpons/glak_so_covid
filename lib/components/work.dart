@@ -148,7 +148,7 @@ class TakePhotos extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: analizar si es necesario que sea dimisible estricto o no
     pr = new ProgressDialog(context, isDismissible: true);
-    pr.style(message: "Guardando ,por favor espere 🔥");
+    pr.style(message: "Guardando ,por favor espere 🔥 ");
 
     return new Column(children: [
       // TODO: agregar shared preferences,por que es muy molesto todos esos mensages
@@ -175,7 +175,7 @@ class TakePhotos extends StatelessWidget {
                 // id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)
                 // FIXME: :)?
                 // por favor quitame la preocupacion
-                Uuid uuid = new Uuid();
+                // Uuid uuid = new Uuid();
                 //var data = <String,String>{
                 //    "id": uuid.v4(),
                 //    "foto_uno": bytesImageToBase64(blocw.image1),
@@ -184,7 +184,6 @@ class TakePhotos extends StatelessWidget {
                 //  };
                 await instance.insertgpersons(
                   <String,String>{
-                    "id": uuid.v4(),
                     "foto_uno": bytesImageToBase64(blocw.image1),
                     "foto_dos": bytesImageToBase64(blocw.image2),
                     "on_time": DateTime.now().toString()

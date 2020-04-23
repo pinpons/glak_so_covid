@@ -14,7 +14,7 @@ class StorageProvider {
   static bool dev = false;
   static Database _database;
   int userNewIndentificador = 7;
-  static int version = 2;
+  static int version = 4;
   static StorageProvider instance = new StorageProvider._();
 
   factory StorageProvider() => instance;
@@ -45,8 +45,8 @@ class StorageProvider {
           '''CREATE TABLE metainfo(id INTEGER PRIMARY KEY ,group_heroe_name TEXT,ubicacion_name TEXT,
 x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
       await db.execute(
-          '''CREATE TABLE persons(id TEXT ,foto_uno TEXT,foto_dos TEXT,extra TEXT,
-        id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
+          '''CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
+id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     });
   }
   // # Model hero
@@ -150,7 +150,7 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
   // TODO: completame
   Future<List<Map<String,dynamic>>> getPersonas() async {
     Database db = await database;
-    return await db.rawQuery("SELECT on_time FROM persons");
+    return await db.rawQuery("SELECT person_id,on_time FROM persons");
   }
 
   Future<Map<String, String>> get simpleMovilInfo async {

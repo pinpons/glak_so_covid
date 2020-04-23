@@ -20,5 +20,5 @@ CREATE TABLE estadisticas(count_persons INTEGER,date_work TEXT)
 CREATE TABLE metainfo(id INTEGER PRIMARY KEY ,group_heroe_name TEXT,ubicacion_name TEXT,
 x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)
 
-CREATE TABLE persons(id TETX,foto_uno TEXT,foto_dos TEXT,extra TEXT,
+CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
 id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)
