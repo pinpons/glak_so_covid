@@ -2,14 +2,25 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:glaksoalcovid/components/App.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppBloc {
   StatusRegisterHero voyArenderizar;
+  SharedPreferences pref;
+  bool modeCircus;
+  bool modeControl ;
   HeroModel hero = new HeroModel();
   // PersonModel person;
   static AppBloc app = new AppBloc._();
   factory AppBloc() => app;
   AppBloc._();
+
+  //Future<void> loadPreferences () async {
+  //  pref = await SharedPreferences.getInstance();
+  //  modeCircus = (pref.getBool("modeCircus")??modeCircus);
+  //  modeControl = (pref.getBool("modeControl") ?? modeControl);
+  //}
+  
 }
 
 enum StatusRegisterHero {

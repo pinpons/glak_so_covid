@@ -5,6 +5,7 @@ import 'package:glaksoalcovid/components/App.dart';
 import 'package:glaksoalcovid/components/src/estadisticas.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 enum renderworkstatus {
@@ -23,6 +24,7 @@ class WorkPageTabs extends StatefulWidget {
 
 //TODO:añadir manejo si es auth o no lo es
 class WorkPage extends State<WorkPageTabs> {
+  AppBloc appBloc = new AppBloc();
   final GlobalKey<ScaffoldState> _keyScaffold = new GlobalKey<ScaffoldState>();
   List<Widget> pages = new List(3);
   int index = 1;
@@ -68,6 +70,56 @@ class WorkPage extends State<WorkPageTabs> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.timeline), title: Text("Estadisticas"))
           ]),
+      drawer: Drawer(
+        child: ListView(
+          padding:EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(accountName: Text(appBloc.hero.name), accountEmail: Text(appBloc.hero.groupName != null ? appBloc.hero.name : "No definido")),
+            SwitchListTile(
+            secondary: Icon(Icons.settings_applications),
+            title: Text("Modo control"),
+            subtitle: Text("Este modo es ideal para lugares como las trancas"),
+            value: appBloc.modeControl, onChanged:
+            (value){
+              setState(() {
+              if(value == false){
+                appBloc.modeCircus = true;
+                appBloc.pref.setBool("modeCircus", true);
+                appBloc.modeControl = value;
+              }else if(value == true && appBloc.modeCircus == true){
+                appBloc.modeCircus = false;
+                appBloc.pref.setBool("modeCircus", false);
+                appBloc.modeControl = value;
+              }
+              appBloc.pref.setBool("modeControl", value);
+                
+              });
+            }
+            ),
+            SwitchListTile(
+              secondary: Icon(Icons.settings_applications),
+              title: Text("Modo circo"),
+              subtitle: Text("Este modo es muy bueno para casos como los mercados,se supone que la salida hay otro control para llevar una marca de tiempo de entrada y salida de las personas"),
+              value: appBloc.modeCircus, 
+              onChanged: (value){
+                  setState(() {
+                  if(value == false){
+                     appBloc.modeControl = true;
+                     appBloc.pref.setBool("modeControl", true);
+                    appBloc.modeCircus = value;
+                  }else if(value == true && appBloc.modeControl == true){
+                    appBloc.modeControl = false;
+                    appBloc.pref.setBool("modeControl",false); 
+                    appBloc.modeCircus = value;
+                  }
+                  appBloc.pref.setBool("modeCircus", value);
+
+                  
+                  });
+            })
+          ],
+        ),
+      ),
     );
   }
 }
@@ -142,7 +194,7 @@ class TakePhotos extends StatelessWidget {
       onPressed: fn,
     );
   }
-
+  //TODO: hacer mas bonito los mensajes de estados
   Widget streamImages() {
     return new StreamBuilder(
       stream: blocw.streammsg,
@@ -160,12 +212,9 @@ class TakePhotos extends StatelessWidget {
               itemCount: blocw.listrender.length,
               itemBuilder: (ctx, i) => blocw.listrender[i]);
         }else if(snapshot.data == renderworkstatus.savedata){
-            return new Text("EXITO");
+            return Center(child: new Text("EXITO"));
         }
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(0.0, 180.0, 0.0, 0.0),
-          child: Text("Necesito una imagen frontal y trasera del carnet"),
-        );
+        return Center(child: Text("Necesito una imagen frontal y trasera del carnet"));
       },
     );
   }

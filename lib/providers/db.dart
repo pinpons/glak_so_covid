@@ -6,6 +6,7 @@ import 'package:glaksoalcovid/bloc/AppBloc.dart';
 import 'package:glaksoalcovid/components/App.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -57,7 +58,13 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
 
   // if return false is a new user devide, but create user
   Future<bool> get isNewUser async {
+    AppBloc appBloc = new AppBloc();
     debugPrint("isNewUser() -> call");
+    appBloc.pref = await SharedPreferences.getInstance();
+    appBloc.modeCircus =  (appBloc.pref.getBool("modeCircus")??false);
+    appBloc.modeControl = (appBloc.pref.getBool("modeControl") ?? true);
+    debugPrint("Mode circus: ${appBloc.modeCircus}");
+    debugPrint("Mode modeControl: ${appBloc.modeControl}");
     Database db = await database;
     List<Map<String, dynamic>> res =
         await db.query("heroe", where: "id_meta = ?", columns: [
@@ -84,7 +91,6 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
       return false;
     }
     debugPrint("No es nuevo usuario");
-    AppBloc appBloc = new AppBloc();
     appBloc.hero = new HeroModel(name: res[0]["name"]);
     appBloc.hero.getPasswd = int2bool(res[0]["get_passwd"]);
     appBloc.hero.heroModelNew = false;
@@ -115,8 +121,14 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
   /// # insert images in table persons
   Future<int> insertgpersons(Map<String,String> data) async {
     int res = 0;
+    
     Database db = await database;
     try {
+      AppBloc appBloc = AppBloc();
+      if(appBloc.modeCircus){
+        data["on_time"] = "${data['on_time']}@";
+      }
+
       await db.insert("persons", data);
       // estadisticas(count_persons INTEGER,date_work TEXT)
       await db.insert("estadisticas", <String,dynamic>{"count_persons": 0,"date_work": getDate()});
@@ -136,7 +148,7 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
   // TODO: completame
   Future<List<Map<String,dynamic>>> getPersonas() async {
     Database db = await database;
-    return await db.rawQuery("SELECT id FROM persons");
+    return await db.rawQuery("SELECT on_time FROM persons");
   }
 
   Future<Map<String, String>> get simpleMovilInfo async {

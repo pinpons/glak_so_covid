@@ -217,6 +217,7 @@ class FormPage extends StatelessWidget {
         "get_passwd": bool2int(Provider.ofHeroModel(context).getPasswd)
       };
       bloc.auth = true;
+      new AppBloc().hero.name = bloc.nameValue;
       bloc
         ..passwordClose
         ..numCarnetClose
