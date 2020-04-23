@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
+//typedef F = Future<List<Map<String,dynamic>>>;// Function<T>(T);
+
 class StorageProvider {
   static bool dev = false;
   static Database _database;
@@ -50,7 +52,7 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     });
   }
   // # Model hero
-  // ```sql 
+  // ```sql
   // CREATE TABLE heroe(id_meta INTEGER DEFAULT $userNewIndentificador ,name TEXT,uuid_movil TEXT,
   // verificado integer DEFAULT 0,password TEXT,get_passwd integer DEFAULT 0,
   // foto TEXT,group_name TEXT,new INTEGER DEFAULT 1)
@@ -61,7 +63,7 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     AppBloc appBloc = new AppBloc();
     debugPrint("isNewUser() -> call");
     appBloc.pref = await SharedPreferences.getInstance();
-    appBloc.modeCircus =  (appBloc.pref.getBool("modeCircus")??false);
+    appBloc.modeCircus = (appBloc.pref.getBool("modeCircus") ?? false);
     appBloc.modeControl = (appBloc.pref.getBool("modeControl") ?? true);
     debugPrint("Mode circus: ${appBloc.modeCircus}");
     debugPrint("Mode modeControl: ${appBloc.modeControl}");
@@ -119,38 +121,71 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
   }
 
   /// # insert images in table persons
-  Future<int> insertgpersons(Map<String,String> data,bool input) async {
+  Future<int> insertgpersons(Map<String, String> data, bool input) async {
     int res = 0;
-    
+
     Database db = await database;
     try {
       AppBloc appBloc = AppBloc();
-      if(appBloc.modeCircus){
-        data["on_time"] = "${data['on_time']}@${(input)?'input':'output'}";
-      }else {
+      if (appBloc.modeCircus) {
+        data["on_time"] = "${data['on_time']}@${(input) ? 'input' : 'output'}";
+      } else {
         data["on_time"] = "${data['on_time']}@'beishu'";
       }
 
       await db.insert("persons", data);
       // estadisticas(count_persons INTEGER,date_work TEXT)
-      await db.insert("estadisticas", <String,dynamic>{"count_persons": 0,"date_work": getDate()});
+      await db.insert("estadisticas",
+          <String, dynamic>{"count_persons": 0, "date_work": getDate()});
     } catch (e) {
       // DATE:some@ERROR:meta_description:error_message;
-      await db.insert("estadisticas", <String,dynamic>{"count_persons": 1,
-      "date_work": "DATE:${getDate()}@ERROR:error al insertar pesona:$e"
+      await db.insert("estadisticas", <String, dynamic>{
+        "count_persons": 1,
+        "date_work": "DATE:${getDate()}@ERROR:error al insertar pesona:$e"
       });
       print("ERROR INSERT : $e");
     }
 
     return res;
-
   }
 
-  /// # list persons save
+  /// # Obtener la lista de personas guardadas
+  /// retorna un mapa
   // TODO: completame
-  Future<List<Map<String,dynamic>>> getPersonas() async {
+  Future<List<Map<String, dynamic>>> getMetaPersonas(int id) async {
     Database db = await database;
-    return await db.rawQuery("SELECT person_id,on_time FROM persons");
+    List<Map<String, dynamic>> resultados;
+    if (id != null) {
+      resultados = await db.rawQuery(
+          "SELECT person_id,extra,on_time FROM persons where person_id > $id limit 10");
+      return resultados;
+      // return await db.query("persons");
+    } else {
+      return await db.rawQuery(
+          "SELECT person_id,extra,on_time FROM persons where person_id limit 10");
+    }
+  }
+
+// complete
+  Future<Map<String, dynamic>> getPerson(int id) async {
+    Database db = await database;
+    List<Map<String, dynamic>> resultados =
+        await db.query("persons", where: "person_id = ?", whereArgs: [id]);
+    return resultados.first;
+  }
+
+  Future<bool> deletePerson(int id) async {
+    Database db = await database;
+    int onRowActionEffect =
+        await db.delete("persons", where: "person_id = ?", whereArgs: [id]);
+    return onRowActionEffect == 1 ? true : false;
+  }
+
+  Future<bool> updatePerson(Map<String, dynamic> data, int target_id) async {
+    Database db = await database;
+    int onRowActionEffect = await db.update("persons", data,
+        where: "person_id = ?", whereArgs: [target_id]);
+    return onRowActionEffect == 1 ? true : false;
   }
 
   Future<Map<String, String>> get simpleMovilInfo async {
@@ -176,12 +211,13 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
 
     return {"name": deviceName, "version": deviceVersion, "id": identifier};
   }
-  
+
   Future<int> getSum() async {
     Database db = await database;
     // estadisticas(count_persons INTEGER,date_work TEXT)
     String date = getDate();
-    String sql = "SELECT count(count_persons) as res FROM estadisticas where count_persons = 0 and date_work = \'$date\'";
+    String sql =
+        "SELECT count(count_persons) as res FROM estadisticas where count_persons = 0 and date_work = \'$date\'";
     var res = await db.rawQuery(sql);
     return res[0]['res'];
   }

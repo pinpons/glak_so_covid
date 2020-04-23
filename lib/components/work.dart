@@ -3,9 +3,10 @@ import 'dart:typed_data';
 
 import 'package:glaksoalcovid/components/App.dart';
 import 'package:glaksoalcovid/components/src/estadisticas.dart';
+import 'package:glaksoalcovid/components/src/trans_image_page.dart';
+import 'package:glaksoalcovid/components/src/trans_item.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:uuid/uuid.dart';
 
 enum renderworkstatus {
   addHeader,
@@ -34,7 +35,8 @@ class WorkPage extends State<WorkPageTabs> {
     //  .createmsg;
     //TODO: crear paginas para el: Transcricion de las imagenes las estadisticas
     pages = [
-      Text("translate"),
+      // Text("translate"),
+      TransImageViewEditElement(),
       TakePhotos(keyScaffold: _keyScaffold),
       Estadisticas()
     ];
@@ -71,66 +73,72 @@ class WorkPage extends State<WorkPageTabs> {
           ]),
       drawer: Drawer(
         child: ListView(
-          padding:EdgeInsets.zero,
+          padding: EdgeInsets.zero,
           children: <Widget>[
-            UserAccountsDrawerHeader(accountName: Text(appBloc.hero.name), accountEmail: Text(appBloc.hero.groupName != null ? appBloc.hero.name : "No definido")),
+            UserAccountsDrawerHeader(
+                accountName: Text(appBloc.hero.name),
+                accountEmail: Text(appBloc.hero.groupName != null
+                    ? appBloc.hero.name
+                    : "No definido")),
             SwitchListTile(
-            secondary: Icon(Icons.settings_applications),
-            title: Text("Modo control"),
-            subtitle: Text("Este modo es ideal para lugares como las trancas"),
-            value: appBloc.modeControl, onChanged:
-            (value){
-              WorkBloc bloc = new WorkBloc();
-              setState(() {
-              if(value == false){
-                appBloc.modeCircus = true;
-                bloc.mode = true;
-                appBloc.pref.setBool("modeCircus", true);
-                appBloc.modeControl = value;
-              }else if(value == true && appBloc.modeCircus == true){
-                appBloc.modeCircus = false;
-                bloc.mode = false;
-                appBloc.pref.setBool("modeCircus", false);
-                appBloc.modeControl = value;
-              }
-              appBloc.pref.setBool("modeControl", value);
-                
-              });
-            }
-            ),
-            SwitchListTile(
-              secondary: Icon(Icons.settings_applications),
-              title: Text("Modo circo"),
-              subtitle: Text("Este modo es muy bueno para casos como los mercados,se supone que la salida hay otro control para llevar una marca de tiempo de entrada y salida de las personas"),
-              value: appBloc.modeCircus, 
-              onChanged: (value){
-                WorkBloc bloc = new WorkBloc();
+                secondary: Icon(Icons.settings_applications),
+                title: Text("Modo control"),
+                subtitle:
+                    Text("Este modo es ideal para lugares como las trancas"),
+                value: appBloc.modeControl,
+                onChanged: (value) {
+                  WorkBloc bloc = new WorkBloc();
                   setState(() {
-                  if(value == false){
-                     appBloc.modeControl = true;
-                     //bloc.mode = true;
-                     appBloc.pref.setBool("modeControl", true);
-                    appBloc.modeCircus = value;
-                  }else if(value == true && appBloc.modeControl == true){
-                    appBloc.modeControl = false;
-                    //bloc.mode = false;
-                    appBloc.pref.setBool("modeControl",false); 
-                    appBloc.modeCircus = value;
-                  }
-                  appBloc.pref.setBool("modeCircus", value);
-
-                  
+                    if (value == false) {
+                      appBloc.modeCircus = true;
+                      bloc.mode = true;
+                      appBloc.pref.setBool("modeCircus", true);
+                      appBloc.modeControl = value;
+                    } else if (value == true && appBloc.modeCircus == true) {
+                      appBloc.modeCircus = false;
+                      bloc.mode = false;
+                      appBloc.pref.setBool("modeCircus", false);
+                      appBloc.modeControl = value;
+                    }
+                    appBloc.pref.setBool("modeControl", value);
                   });
-            }),
+                }),
+            SwitchListTile(
+                secondary: Icon(Icons.settings_applications),
+                title: Text("Modo circo"),
+                subtitle: Text(
+                    "Este modo es muy bueno para casos como los mercados,se supone que la salida hay otro control para llevar una marca de tiempo de entrada y salida de las personas"),
+                value: appBloc.modeCircus,
+                onChanged: (value) {
+                  WorkBloc bloc = new WorkBloc();
+                  setState(() {
+                    if (value == false) {
+                      appBloc.modeControl = true;
+                      //bloc.mode = true;
+                      appBloc.pref.setBool("modeControl", true);
+                      appBloc.modeCircus = value;
+                    } else if (value == true && appBloc.modeControl == true) {
+                      appBloc.modeControl = false;
+                      //bloc.mode = false;
+                      appBloc.pref.setBool("modeControl", false);
+                      appBloc.modeCircus = value;
+                    }
+                    appBloc.pref.setBool("modeCircus", value);
+                  });
+                }),
             new SwitchListTile(
-      secondary: Icon(Icons.directions_run),
-      subtitle: Text("Si el interruptor esta activado entonces la persona esta de entrada si no es asi esta de salida"),
-      title: Text("¿La persona esta de salida o entrada del circo?"),
-      value: new WorkBloc().mode ?? false, onChanged:(appBloc.modeCircus)?(value){
-      setState(() {
-        new WorkBloc().mode = value;
-      });
-    }:null)
+                secondary: Icon(Icons.directions_run),
+                subtitle: Text(
+                    "Si el interruptor esta activado entonces la persona esta de entrada si no es asi esta de salida"),
+                title: Text("¿La persona esta de salida o entrada del circo?"),
+                value: new WorkBloc().mode ?? false,
+                onChanged: (appBloc.modeCircus)
+                    ? (value) {
+                        setState(() {
+                          new WorkBloc().mode = value;
+                        });
+                      }
+                    : null)
           ],
         ),
       ),
@@ -182,13 +190,11 @@ class TakePhotos extends StatelessWidget {
                 //    "foto_dos": bytesImageToBase64(blocw.image2),
                 //    "on_time": DateTime.now().toString()
                 //  };
-                await instance.insertgpersons(
-                  <String,String>{
-                    "foto_uno": bytesImageToBase64(blocw.image1),
-                    "foto_dos": bytesImageToBase64(blocw.image2),
-                    "on_time": DateTime.now().toString()
-                  },
-                blocw.mode);
+                await instance.insertgpersons(<String, String>{
+                  "foto_uno": bytesImageToBase64(blocw.image1),
+                  "foto_dos": bytesImageToBase64(blocw.image2),
+                  "on_time": DateTime.now().toString()
+                }, blocw.mode);
                 blocw.dispose();
                 await pr.hide();
               });
@@ -208,6 +214,7 @@ class TakePhotos extends StatelessWidget {
       onPressed: fn,
     );
   }
+
   //TODO: hacer mas bonito los mensajes de estados
   Widget streamImages() {
     return new StreamBuilder(
@@ -225,10 +232,11 @@ class TakePhotos extends StatelessWidget {
           return ListView.builder(
               itemCount: blocw.listrender.length,
               itemBuilder: (ctx, i) => blocw.listrender[i]);
-        }else if(snapshot.data == renderworkstatus.savedata){
-            return Center(child: new Text("EXITO"));
+        } else if (snapshot.data == renderworkstatus.savedata) {
+          return Center(child: new Text("EXITO"));
         }
-        return Center(child: Text("Necesito una imagen frontal y trasera del carnet"));
+        return Center(
+            child: Text("Necesito una imagen frontal y trasera del carnet"));
       },
     );
   }
@@ -348,7 +356,8 @@ class TakePhotos extends StatelessWidget {
             "Bienvenido miembro de ${bloc.hero.groupName}, nos alegra tenerte de nuevo!"));
   }
 }
-/// 
+
+///
 /// Si el mode esta en true entonces la entrada del usuario es entrada al circo
 /// si el false es salida del circo
 class WorkBloc {
@@ -393,4 +402,3 @@ class WorkBloc {
   //  return this;
   //}
 }
-

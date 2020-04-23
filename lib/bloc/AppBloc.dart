@@ -8,7 +8,7 @@ class AppBloc {
   StatusRegisterHero voyArenderizar;
   SharedPreferences pref;
   bool modeCircus;
-  bool modeControl ;
+  bool modeControl;
   HeroModel hero = new HeroModel();
   // PersonModel person;
   static AppBloc app = new AppBloc._();
@@ -20,7 +20,7 @@ class AppBloc {
   //  modeCircus = (pref.getBool("modeCircus")??modeCircus);
   //  modeControl = (pref.getBool("modeControl") ?? modeControl);
   //}
-  
+
 }
 
 enum StatusRegisterHero {
@@ -218,7 +218,7 @@ Uint8List base64ImageToBytes(String base64string) =>
     base64.decode(base64string);
 String getDate() {
   DateTime hoy = DateTime.now();
-  int dia,mes,ano;
+  int dia, mes, ano;
   dia = hoy.day;
   mes = hoy.month;
   ano = hoy.year;
@@ -226,17 +226,16 @@ String getDate() {
 }
 
 Future<int> get isConnected async {
-int returns;
-try {
-  List<InternetAddress> result = await InternetAddress.lookup('google.com');
-  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-    returns = 1;
+  int returns;
+  try {
+    List<InternetAddress> result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      returns = 1;
+    }
+  } on SocketException catch (_) {
+    returns = 0;
+  } on Exception catch (_) {
+    returns = -1;
   }
-} on SocketException catch (_) {
-  returns = 0;
-} on Exception catch(_) {
-  returns = -1;
-}
-return returns;
-
+  return returns;
 }
