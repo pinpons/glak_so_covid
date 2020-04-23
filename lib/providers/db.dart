@@ -1,5 +1,5 @@
-import 'dart:io';
-
+import 'dart:io' show Platform;
+import 'dart:io' show Directory;
 import 'package:device_info/device_info.dart';
 import 'package:flutter/services.dart';
 import 'package:glaksoalcovid/bloc/AppBloc.dart';
@@ -119,14 +119,16 @@ x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
   }
 
   /// # insert images in table persons
-  Future<int> insertgpersons(Map<String,String> data) async {
+  Future<int> insertgpersons(Map<String,String> data,bool input) async {
     int res = 0;
     
     Database db = await database;
     try {
       AppBloc appBloc = AppBloc();
       if(appBloc.modeCircus){
-        data["on_time"] = "${data['on_time']}@";
+        data["on_time"] = "${data['on_time']}@${(input)?'input':'output'}";
+      }else {
+        data["on_time"] = "${data['on_time']}@'beishu'";
       }
 
       await db.insert("persons", data);

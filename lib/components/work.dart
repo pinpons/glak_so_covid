@@ -5,7 +5,6 @@ import 'package:glaksoalcovid/components/App.dart';
 import 'package:glaksoalcovid/components/src/estadisticas.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 enum renderworkstatus {
@@ -81,13 +80,16 @@ class WorkPage extends State<WorkPageTabs> {
             subtitle: Text("Este modo es ideal para lugares como las trancas"),
             value: appBloc.modeControl, onChanged:
             (value){
+              WorkBloc bloc = new WorkBloc();
               setState(() {
               if(value == false){
                 appBloc.modeCircus = true;
+                bloc.mode = true;
                 appBloc.pref.setBool("modeCircus", true);
                 appBloc.modeControl = value;
               }else if(value == true && appBloc.modeCircus == true){
                 appBloc.modeCircus = false;
+                bloc.mode = false;
                 appBloc.pref.setBool("modeCircus", false);
                 appBloc.modeControl = value;
               }
@@ -102,13 +104,16 @@ class WorkPage extends State<WorkPageTabs> {
               subtitle: Text("Este modo es muy bueno para casos como los mercados,se supone que la salida hay otro control para llevar una marca de tiempo de entrada y salida de las personas"),
               value: appBloc.modeCircus, 
               onChanged: (value){
+                WorkBloc bloc = new WorkBloc();
                   setState(() {
                   if(value == false){
                      appBloc.modeControl = true;
+                     //bloc.mode = true;
                      appBloc.pref.setBool("modeControl", true);
                     appBloc.modeCircus = value;
                   }else if(value == true && appBloc.modeControl == true){
                     appBloc.modeControl = false;
+                    //bloc.mode = false;
                     appBloc.pref.setBool("modeControl",false); 
                     appBloc.modeCircus = value;
                   }
@@ -116,7 +121,16 @@ class WorkPage extends State<WorkPageTabs> {
 
                   
                   });
-            })
+            }),
+            new SwitchListTile(
+      secondary: Icon(Icons.directions_run),
+      subtitle: Text("Si el interruptor esta activado entonces la persona esta de entrada si no es asi esta de salida"),
+      title: Text("¿La persona esta de salida o entrada del circo?"),
+      value: new WorkBloc().mode ?? false, onChanged:(appBloc.modeCircus)?(value){
+      setState(() {
+        new WorkBloc().mode = value;
+      });
+    }:null)
           ],
         ),
       ),
@@ -126,6 +140,7 @@ class WorkPage extends State<WorkPageTabs> {
 
 class TakePhotos extends StatelessWidget {
   ProgressDialog pr;
+  AppBloc appBloc = new AppBloc();
   GlobalKey<ScaffoldState> keyScaffold;
   WorkBloc blocw = new WorkBloc();
   TakePhotos({this.keyScaffold});
@@ -173,8 +188,8 @@ class TakePhotos extends StatelessWidget {
                     "foto_uno": bytesImageToBase64(blocw.image1),
                     "foto_dos": bytesImageToBase64(blocw.image2),
                     "on_time": DateTime.now().toString()
-                  }
-                );
+                  },
+                blocw.mode);
                 blocw.dispose();
                 await pr.hide();
               });
@@ -334,7 +349,9 @@ class TakePhotos extends StatelessWidget {
             "Bienvenido miembro de ${bloc.hero.groupName}, nos alegra tenerte de nuevo!"));
   }
 }
-
+/// 
+/// Si el mode esta en true entonces la entrada del usuario es entrada al circo
+/// si el false es salida del circo
 class WorkBloc {
   StreamController<renderworkstatus> _streamsg =
       StreamController<renderworkstatus>.broadcast();
@@ -343,6 +360,7 @@ class WorkBloc {
   List<Widget> listrender = new List<Widget>(2);
   Uint8List image1;
   Uint8List image2;
+  bool mode = false;
   WorkBloc get _createmsg {
     _streamsg = new StreamController<renderworkstatus>.broadcast();
     return this;
@@ -361,6 +379,7 @@ class WorkBloc {
   factory WorkBloc() => _bloc;
   WorkBloc._();
   dispose() {
+    mode = false;
     image1 = null;
     image2 = null;
     img1 = 0;
@@ -375,3 +394,4 @@ class WorkBloc {
   //  return this;
   //}
 }
+
