@@ -192,12 +192,13 @@ class TakePhotos extends StatelessWidget {
                 //  };
                 // test
                 //print("IMAGE ${blocw.image1}");
-                //var foto = bytesImageToBase64(blocw.image1);
-                //print("FO: $foto");
+                var foto2 = bytesImage2Base64(blocw.image1);
+                var foto = bytesImageToBase64(blocw.image1);
+                print("FOto v1: $foto");print("FOto v2: $foto2");
                 await instance.insertgpersons(<String,String>{
-                  "foto_uno": bytesImageToBase64(blocw.image1),
+                  "foto": bytesImage2Base64(blocw.image1),
                   //"foto_uno": blocw.image1,
-                  "foto_dos": bytesImageToBase64(blocw.image2),
+                  "fotos": bytesImageToBase64(blocw.image2),
                   "on_time": DateTime.now().toString()
                 }, blocw.mode);
                 blocw.dispose();

@@ -49,8 +49,8 @@ class ItemView extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: hacerlo mas bonito
     bloc = new FormBloc();
-    debugPrint("FOTO UNO: ${data['foto_uno']}");
-    debugPrint("FOTO dos: ${data['foto_dos']}");
+    debugPrint("FOTO UNO: ${data['foto']}");
+    debugPrint("FOTO dos: ${data['fotos']}");
     return new Container(
       child: new Container(
         child: Column(

@@ -213,9 +213,13 @@ void navigateToOtherPageNotBackUser(BuildContext context, Widget toPage) {
   );
 }
 
+
+String bytesImage2Base64(Uint8List bytes) => base64Encode(bytes);
 String bytesImageToBase64(Uint8List bytes) => base64.encode(bytes);
 Uint8List base64ImageToBytes(String base64string) =>
     base64.decode(base64string);
+Uint8List base64Image2Bytes(String base64string) =>
+    base64Decode(base64string);
 String getDate() {
   DateTime hoy = DateTime.now();
   int dia, mes, ano;

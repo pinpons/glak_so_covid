@@ -16,7 +16,7 @@ class StorageProvider {
   static bool dev = false;
   static Database _database;
   int userNewIndentificador = 7;
-  static int version = 5;
+  static int version = 6;
   static StorageProvider instance = new StorageProvider._();
 
   factory StorageProvider() => instance;
@@ -48,7 +48,7 @@ class StorageProvider {
 x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
       //TODO: changue model.sql
       await db.execute(
-          '''CREATE TABLE persons(foto_uno TEXT,foto_dos TEXT,extra TEXT,
+          '''CREATE TABLE persons(foto TEXT,fotos TEXT,extra TEXT,
 id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     });
   }
@@ -64,8 +64,8 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     AppBloc appBloc = new AppBloc();
     debugPrint("isNewUser() -> call");
     appBloc.pref = await SharedPreferences.getInstance();
-    appBloc.modeCircus = (appBloc.pref.getBool("modeCircus") ?? false);
     appBloc.modeControl = (appBloc.pref.getBool("modeControl") ?? true);
+    appBloc.modeCircus = (appBloc.pref.getBool("modeCircus") ?? false);
     debugPrint("Mode circus: ${appBloc.modeCircus}");
     debugPrint("Mode modeControl: ${appBloc.modeControl}");
     Database db = await database;
@@ -137,10 +137,11 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
       //debugPrint("FOTO uno: ${data['foto_dos']}");
       debugPrint("CALL () -> INSERTANDO");
       // await db.insert("persons", data);
-      String sql = """INSERT INTO persons(foto_uno,on_time)VALUES("${data['foto_uno']}",\'${data['on_time']}\')""";
+      String sql = """INSERT INTO persons(foto_uno,on_time)VALUES('''${data['foto']}''',\'${data['on_time']}\')""";
       print("SQL RAW: $sql");
+      await db.insert("persons",data);
       //print("insert RAW:$sql");
-      await db.rawInsert(sql);
+      //await db.rawInsert(sql);
       //print(await db.query("persons"));
       // estadisticas(count_persons INTEGER,date_work TEXT)
       await db.insert("estadisticas",
@@ -180,16 +181,19 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
 
 // complete
   Future<Map<String, dynamic>> getPerson(int id) async {
+    print("search: $id");
     Database db = await database;
 //    CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
 //id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)
     //var li = await db.query("persons", where: "rowid = ?", whereArgs: [id]);
     //print("DEBIF: $li");
     //await db.rawQuery("update persons set foto_uno = '''dasdmasbdqwjhbdqwjkbdwjkqbñdjkqwbjdkqwbdqwlbdkqwdbqwlbdqwdbqwldbqwdlbqwlbdqwldblqwdblqw ''' where rowid = $id");
-    var sql = "SELECT rowid,on_time,foto_uno,foto_dos FROM persons where rowid = $id";
+    //var sql = "SELECT rowid,foto_uno,on_time FROM persons where rowid = $id";
+    var sql = "SELECT extra,on_time FROM persons where rowid = $id";
     List<Map<String, dynamic>> resultados =
-        await db.rawQuery(sql);
-        print("GET PERSON:call()->");
+        await db.query("persons",where: "rowid = ?",whereArgs: [id],columns: ["on_time"]);
+        await db.query("persons",where: "rowid = ?",whereArgs: [id],columns: ["foto"]);
+        print("GET PERSON:call()-> ${resultados[0]}");
     return resultados[0];
   }
 
