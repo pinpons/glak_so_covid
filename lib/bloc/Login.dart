@@ -44,6 +44,10 @@ class FormBloc with Validator {
     _domicilioStream = new StreamController.broadcast();
     return this;
   }
+  FormBloc createsEn() {
+    _enStream = new StreamController.broadcast();
+    return this;
+  }
 
   //close stremas
   get nameClose {

@@ -132,8 +132,11 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
       } else {
         data["on_time"] = "${data['on_time']}@'beishu'";
       }
-
+      debugPrint("FOTO uno: ${data['foto_uno']}");
+      debugPrint("FOTO uno: ${data['foto_dos']}");
+      debugPrint("CALL () -> INSERTANDO");
       await db.insert("persons", data);
+      print(await db.query("persons"));
       // estadisticas(count_persons INTEGER,date_work TEXT)
       await db.insert("estadisticas",
           <String, dynamic>{"count_persons": 0, "date_work": getDate()});
@@ -169,9 +172,16 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
 // complete
   Future<Map<String, dynamic>> getPerson(int id) async {
     Database db = await database;
+//    CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
+//id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)
+    var li = await db.query("persons", where: "person_id = ?", whereArgs: [id]);
+    print("DEBIF: $li");
     List<Map<String, dynamic>> resultados =
-        await db.query("persons", where: "person_id = ?", whereArgs: [id]);
-    return resultados.first;
+        await db.query("persons", where: "person_id = ?", whereArgs: [id],columns: ["person_id",
+        "foto_uno",
+        "foto_dos"
+        ]);
+    return resultados[0];
   }
 
   Future<bool> deletePerson(int id) async {
