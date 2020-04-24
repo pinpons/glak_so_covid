@@ -16,7 +16,7 @@ class StorageProvider {
   static bool dev = false;
   static Database _database;
   int userNewIndentificador = 7;
-  static int version = 4;
+  static int version = 5;
   static StorageProvider instance = new StorageProvider._();
 
   factory StorageProvider() => instance;
@@ -46,8 +46,9 @@ class StorageProvider {
       await db.execute(
           '''CREATE TABLE metainfo(id INTEGER PRIMARY KEY ,group_heroe_name TEXT,ubicacion_name TEXT,
 x TEXT,y TEXT,on_time_start TEXT,on_time_end TEXT)''');
+      //TODO: changue model.sql
       await db.execute(
-          '''CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
+          '''CREATE TABLE persons(foto_uno TEXT,foto_dos TEXT,extra TEXT,
 id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     });
   }
@@ -130,13 +131,17 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
       if (appBloc.modeCircus) {
         data["on_time"] = "${data['on_time']}@${(input) ? 'input' : 'output'}";
       } else {
-        data["on_time"] = "${data['on_time']}@'beishu'";
+        data["on_time"] = "${data['on_time']}@beishu";
       }
-      debugPrint("FOTO uno: ${data['foto_uno']}");
-      debugPrint("FOTO uno: ${data['foto_dos']}");
+      //debugPrint("FOTO uno: ${data['foto_uno']}");
+      //debugPrint("FOTO uno: ${data['foto_dos']}");
       debugPrint("CALL () -> INSERTANDO");
-      await db.insert("persons", data);
-      print(await db.query("persons"));
+      // await db.insert("persons", data);
+      String sql = """INSERT INTO persons(foto_uno,on_time)VALUES("${data['foto_uno']}",\'${data['on_time']}\')""";
+      print("SQL RAW: $sql");
+      //print("insert RAW:$sql");
+      await db.rawInsert(sql);
+      //print(await db.query("persons"));
       // estadisticas(count_persons INTEGER,date_work TEXT)
       await db.insert("estadisticas",
           <String, dynamic>{"count_persons": 0, "date_work": getDate()});
@@ -160,12 +165,16 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     List<Map<String, dynamic>> resultados;
     if (id != null) {
       resultados = await db.rawQuery(
-          "SELECT person_id,extra,on_time FROM persons where person_id > $id limit 10");
+          "SELECT rowid,extra,on_time FROM persons where rowid > $id limit 10");
       return resultados;
       // return await db.query("persons");
     } else {
-      return await db.rawQuery(
-          "SELECT person_id,extra,on_time FROM persons where person_id limit 10");
+      var res= await db.rawQuery(
+          "SELECT rowid,extra,on_time FROM persons limit 10");
+      print(res);
+      return res;
+      //return await db.rawQuery(
+      //    "SELECT rowid,extra,on_time FROM persons limit 10");
     }
   }
 
@@ -174,25 +183,26 @@ id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)''');
     Database db = await database;
 //    CREATE TABLE persons(person_id INTEGER PRIMARY KEY,foto_uno TEXT,foto_dos TEXT,extra TEXT,
 //id_carnet INTEGER,name TEXT,domicilio TEXT,en TEXT,on_time TEXT)
-    var li = await db.query("persons", where: "person_id = ?", whereArgs: [id]);
-    print("DEBIF: $li");
+    //var li = await db.query("persons", where: "rowid = ?", whereArgs: [id]);
+    //print("DEBIF: $li");
+    //await db.rawQuery("update persons set foto_uno = '''dasdmasbdqwjhbdqwjkbdwjkqbñdjkqwbjdkqwbdqwlbdkqwdbqwlbdqwdbqwldbqwdlbqwlbdqwldblqwdblqw ''' where rowid = $id");
+    var sql = "SELECT rowid,on_time,foto_uno,foto_dos FROM persons where rowid = $id";
     List<Map<String, dynamic>> resultados =
-        await db.query("persons", where: "person_id = ?", whereArgs: [id],columns: ["person_id",
-        "foto_uno",
-        "foto_dos"
-        ]);
+        await db.rawQuery(sql);
+        print("GET PERSON:call()->");
     return resultados[0];
   }
 
   Future<bool> deletePerson(int id) async {
     Database db = await database;
     int onRowActionEffect =
-        await db.delete("persons", where: "person_id = ?", whereArgs: [id]);
+        await db.delete("persons", where: "rowid = ?", whereArgs: [id]);
     return onRowActionEffect == 1 ? true : false;
   }
 
   Future<bool> updatePerson(Map<String, dynamic> data, int target_id) async {
     Database db = await database;
+    //TODO:
     int onRowActionEffect = await db.update("persons", data,
         where: "person_id = ?", whereArgs: [target_id]);
     return onRowActionEffect == 1 ? true : false;

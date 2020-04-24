@@ -50,7 +50,7 @@ class TrasnImage extends StatelessWidget {
               return new TranscriptionItem(
                 ago: timeago.format(DateTime.parse(data[i]["on_time"].split("@")[0]),locale: "es"),
                 fill: data[i]["extra"],
-                indentificador: data[i]["person_id"],
+                indentificador: data[i]["rowid"],
               );
             }));
   }

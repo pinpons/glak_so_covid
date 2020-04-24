@@ -40,7 +40,8 @@ class TranscriptionProvider {
       List<Map<String, dynamic>> resultados =
           await StorageProvider().getMetaPersonas(_lastId);
       if (resultados.isNotEmpty) {
-        _lastId = resultados.last["person_id"] ?? null;
+        _lastId = resultados.last["rowid"] ?? null;
+        print("LASTUID;: $_lastId");
         //test
         _elements.addAll(resultados);
         addElements(_elements);
