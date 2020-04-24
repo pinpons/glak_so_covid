@@ -12,7 +12,7 @@ class TranscriptionItem extends StatelessWidget {
       title: Text("Identificador unico $indentificador"),
       subtitle: Text("Registrado $ago"),
       onTap: () {
-        //Navigator.push();
+        Navigator.pushNamed(context, "/item", arguments: indentificador);
       },
     );
   }

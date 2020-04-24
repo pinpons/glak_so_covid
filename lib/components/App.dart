@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:glaksoalcovid/bloc/AppBloc.dart';
 import 'package:glaksoalcovid/components/src/FormPage.dart';
 import 'package:glaksoalcovid/components/src/check.dart';
+import 'package:glaksoalcovid/components/src/item_page.dart';
 import 'package:glaksoalcovid/components/work.dart';
 import 'package:glaksoalcovid/providers/db.dart';
 export 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class App extends StatelessWidget {
         "/form": (context) => new FormPage(),
         "/check": (context) => new CheckPage(),
         "/works": (context) => new WorkPageTabs(),
+        "/item": (context) => new ItemPage()
       },
       initialRoute: "/",
     );
