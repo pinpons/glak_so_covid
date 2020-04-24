@@ -1,18 +1,17 @@
 import 'package:glaksoalcovid/components/App.dart';
 import 'package:glaksoalcovid/components/src/trans_item.dart';
 import 'package:glaksoalcovid/providers/transcription.dart';
-
+import "package:timeago/timeago.dart" as timeago;
 class Name {}
 
 class TransImageViewEditElement extends StatelessWidget {
-  TranscriptionProvider provider = new TranscriptionProvider();
+  TranscriptionProvider provider;
 
   @override
   Widget build(BuildContext context) {
+    provider  = new TranscriptionProvider();
     provider.getElements();
-    return Scaffold(
-      appBar: AppBar(title: Text("Transcripcion de imagenes")),
-      body: StreamBuilder(
+    return StreamBuilder(
         stream: provider.createStreamElements.stream,
         builder: (BuildContext ctx,
             AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
@@ -23,8 +22,7 @@ class TransImageViewEditElement extends StatelessWidget {
             return new Center(child: CircularProgressIndicator());
           }
         },
-      ),
-    );
+      );
   }
 }
 
@@ -38,9 +36,10 @@ class TrasnImage extends StatelessWidget {
   Widget build(BuildContext context) {
     _controller = new PageController();
     _controller.addListener(() {
-      if (_controller.position.pixels >=
-          _controller.position.maxScrollExtent - 200) {
+      if (_controller.position.pixels ==
+          _controller.position.maxScrollExtent) {
         getMore();
+        debugPrint("ON: call()-> scrool");
       }
     });
     return new Container(
@@ -49,7 +48,7 @@ class TrasnImage extends StatelessWidget {
             itemCount: data.length,
             itemBuilder: (BuildContext ctx, int i) {
               return new TranscriptionItem(
-                ago: "2 dias",
+                ago: timeago.format(DateTime.parse(data[i]["on_time"].split("@")[0]),locale: "es"),
                 fill: data[i]["extra"],
                 indentificador: data[i]["person_id"],
               );

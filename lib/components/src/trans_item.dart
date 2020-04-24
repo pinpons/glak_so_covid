@@ -10,7 +10,7 @@ class TranscriptionItem extends StatelessWidget {
     return new ListTile(
       leading: levelFillPerson(),
       title: Text("Identificador unico $indentificador"),
-      subtitle: Text("Registrado hace $ago"),
+      subtitle: Text("Registrado $ago"),
       onTap: () {
         //Navigator.push();
       },

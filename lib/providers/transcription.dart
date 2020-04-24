@@ -7,11 +7,17 @@ class TranscriptionProvider {
   int _lastId;
   bool _cagando;
   StreamController<List<Map<String, dynamic>>> _elementsStream;
+  // test
+  List<Map<String,dynamic>> _elements;
 
-  static final TranscriptionProvider _instance = new TranscriptionProvider._();
+  // static final TranscriptionProvider _instance = new TranscriptionProvider._();
 
-  factory TranscriptionProvider() => _instance;
-  TranscriptionProvider._();
+  // factory TranscriptionProvider() => _instance;
+   TranscriptionProvider() {
+    _elements = new List();
+     this._cagando = false;
+   }
+  // TranscriptionProvider._();
 
   TranscriptionProvider get createStreamElements {
     _elementsStream = new StreamController.broadcast();
@@ -26,14 +32,18 @@ class TranscriptionProvider {
 
   Future<bool> getElements() async {
     if (_cagando) {
+      print("CALL: cargando ...");
       return false;
     } else {
+      print("CALL: work ..");
       _cagando = true;
       List<Map<String, dynamic>> resultados =
           await StorageProvider().getMetaPersonas(_lastId);
       if (resultados.isNotEmpty) {
         _lastId = resultados.last["person_id"] ?? null;
-        addElements(resultados);
+        //test
+        _elements.addAll(resultados);
+        addElements(_elements);
         _cagando = false;
         return true;
       }
